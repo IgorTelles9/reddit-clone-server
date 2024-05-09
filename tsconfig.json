@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
         "outDir": "./dist",
         "strict": true,
         "esModuleInterop": true,
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "module": "ES2022",
+        "target": "ES6",
+        "moduleResolution": "node",
     },
     "include": [
         "src/**/*.ts"
