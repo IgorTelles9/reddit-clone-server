@@ -1,12 +1,12 @@
 {
     "name": "reddit-clone",
-    "type": "module",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
         "compile": "tsc -p . --watch",
-        "start": "nodemon dist/index.js"
+        "start": "nodemon dist/index.js",
+        "generate": "npx prisma generate type-graphql"
     },
     "keywords": [],
     "author": "",
@@ -15,6 +15,7 @@
         "@apollo/server": "^4.10.4",
         "@prisma/client": "^5.13.0",
         "apollo-server-express": "^3.13.0",
+        "argon2": "^0.40.1",
         "express": "^4.19.2",
         "graphql": "^16.8.1",
         "graphql-scalars": "^1.23.0",
