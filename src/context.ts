@@ -1,4 +1,6 @@
 export type Context = {
     prisma: import("@prisma/client").PrismaClient;
-    req: any;
+    req: Express.Request
+    res: Express.Response;
+
 }

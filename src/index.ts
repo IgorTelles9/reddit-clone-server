@@ -5,6 +5,10 @@ import { ApolloServer } from "apollo-server-express";
 import { resolvers } from "@generated/type-graphql";
 import { buildSchema } from 'type-graphql';
 import { UserResolver } from "./resolvers/user";
+import { getSession } from "./session";
+import { Context } from "./context";
+
+
 
 const app = express();
 const prisma = new PrismaClient();
@@ -12,14 +16,16 @@ const prisma = new PrismaClient();
 const main = async () => {
     const port = process.env.PORT || 4000;
 
+    app.use(getSession())
+
     const schema = await buildSchema({
         resolvers: [UserResolver, ...resolvers],
         validate: false
     })
     const apollo = new ApolloServer({
         schema,
-        context: ({ req }) => {
-            return { prisma, req }
+        context: ({ req, res }): Context => {
+            return { prisma, req, res } as Context;
         }
     });
     await apollo.start();

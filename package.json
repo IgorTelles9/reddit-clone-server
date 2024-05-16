@@ -6,7 +6,7 @@
     "scripts": {
         "compile": "tsc -p . --watch",
         "start": "nodemon dist/index.js",
-        "generate": "npx prisma generate type-graphql"
+        "gen": "npx prisma generate type-graphql"
     },
     "keywords": [],
     "author": "",
@@ -16,15 +16,19 @@
         "@prisma/client": "^5.13.0",
         "apollo-server-express": "^3.13.0",
         "argon2": "^0.40.1",
+        "connect-redis": "^7.1.1",
         "express": "^4.19.2",
+        "express-session": "^1.18.0",
         "graphql": "^16.8.1",
         "graphql-scalars": "^1.23.0",
+        "redis": "^4.6.13",
         "reflect-metadata": "^0.2.2",
         "type-graphql": "^2.0.0-rc.1",
         "typescript": "^5.4.5"
     },
     "devDependencies": {
         "@types/express": "^4.17.21",
+        "@types/express-session": "^1.18.0",
         "@types/node": "^20.12.11",
         "class-validator": "^0.14.1",
         "typegraphql-prisma": "^0.27.2"
