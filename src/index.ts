@@ -29,7 +29,12 @@ const main = async () => {
         }
     });
     await apollo.start();
-    apollo.applyMiddleware({ app: app as any });
+    apollo.applyMiddleware(
+        {
+            app: app as any,
+            cors: { origin: ["http://localhost:3000"], credentials: true },
+        }
+    );
 
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);

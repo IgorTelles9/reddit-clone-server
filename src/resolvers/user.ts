@@ -20,10 +20,13 @@ export class UserResolver {
     async createUser(
         @Arg("username") username: string,
         @Arg("password") password: string,
-        @Ctx() { prisma }: Context
+        @Ctx() { prisma, req }: Context
     ): Promise<UserResponse> {
         if (username.length < 3)
             return { errors: [getUsernameTooShortError()] };
+
+        if (password.length < 6)
+            return { errors: [getPasswordTooShortError()] };
 
         const existingUser = await prisma.user.findUnique({ where: { username: username.toLowerCase() } });
         if (existingUser)
@@ -36,6 +39,7 @@ export class UserResolver {
                 password: hashedPassword
             }
         });
+        req.session!.userId = newUser.id;
         return { user: newUser };
     }
 
@@ -52,6 +56,21 @@ export class UserResolver {
         }
         return { errors: [getUsernameIncorrectError(), getPasswordIncorrectError()] };
     }
+
+    @Mutation(() => Boolean)
+    logout(
+        @Ctx() { req, res }: Context
+    ): Promise<boolean> {
+        return new Promise((resolve) => req.session!.destroy((err) => {
+            if (err) {
+                console.error(err);
+                resolve(false);
+                return;
+            }
+            res.clearCookie('qid');
+            resolve(true);
+        }));
+    }
 }
 
 const getUsernameNotAvailableError = (): FieldError => {
@@ -64,7 +83,14 @@ const getUsernameNotAvailableError = (): FieldError => {
 const getUsernameTooShortError = (): FieldError => {
     return {
         field: 'username',
-        message: 'Username too short'
+        message: "Username's too short"
+    };
+}
+
+const getPasswordTooShortError = (): FieldError => {
+    return {
+        field: 'password',
+        message: "Password's too short"
     };
 }
 
