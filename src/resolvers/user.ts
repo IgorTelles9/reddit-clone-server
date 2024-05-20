@@ -3,6 +3,7 @@ import { Context } from "../context";
 import { UserResponse } from "../types/user";
 import { FieldError } from "../types/error";
 import { User } from "@generated/type-graphql/models/User";
+import validator from "validator";
 const argon2 = require('argon2');
 
 @Resolver()
@@ -20,6 +21,7 @@ export class UserResolver {
     async createUser(
         @Arg("username") username: string,
         @Arg("password") password: string,
+        @Arg("email") email: string,
         @Ctx() { prisma, req }: Context
     ): Promise<UserResponse> {
         if (username.length < 3)
@@ -27,6 +29,9 @@ export class UserResolver {
 
         if (password.length < 6)
             return { errors: [getPasswordTooShortError()] };
+
+        if (!validator.isEmail(email))
+            return { errors: [getInvalidEmailError()] };
 
         const existingUser = await prisma.user.findUnique({ where: { username: username.toLowerCase() } });
         if (existingUser)
@@ -36,6 +41,7 @@ export class UserResolver {
         const newUser = await prisma.user.create({
             data: {
                 username: username.toLowerCase(),
+                email: email.toLowerCase(),
                 password: hashedPassword
             }
         });
@@ -45,16 +51,22 @@ export class UserResolver {
 
     @Mutation(() => UserResponse)
     async login(
-        @Arg("username") username: string,
+        @Arg("usernameOrEmail") usernameOrEmail: string,
         @Arg("password") password: string,
         @Ctx() { req, prisma }: Context
     ): Promise<UserResponse> {
-        const user = await prisma.user.findUnique({ where: { username: username.toLowerCase() } });
+
+        let searchCriteria: { username?: string, email?: string } = {};
+        if (validator.isEmail(usernameOrEmail))
+            searchCriteria = { email: usernameOrEmail }
+        else
+            searchCriteria = { username: usernameOrEmail }
+        const user = await prisma.user.findUnique({ where: searchCriteria as any });
         if (user && await argon2.verify(user.password, password)) {
             req.session!.userId = user.id;
             return { user };
         }
-        return { errors: [getUsernameIncorrectError(), getPasswordIncorrectError()] };
+        return { errors: [getUsernameEmailIncorrectError(), getPasswordIncorrectError()] };
     }
 
     @Mutation(() => Boolean)
@@ -71,6 +83,8 @@ export class UserResolver {
             resolve(true);
         }));
     }
+
+    // @Mutation(())
 }
 
 const getUsernameNotAvailableError = (): FieldError => {
@@ -94,10 +108,17 @@ const getPasswordTooShortError = (): FieldError => {
     };
 }
 
-const getUsernameIncorrectError = (): FieldError => {
+const getInvalidEmailError = (): FieldError => {
     return {
-        field: 'username',
-        message: 'Username incorrect'
+        field: 'email',
+        message: 'Invalid email'
+    };
+}
+
+const getUsernameEmailIncorrectError = (): FieldError => {
+    return {
+        field: 'username/email',
+        message: 'Username/Email incorrect'
     };
 }
 
