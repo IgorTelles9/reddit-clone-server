@@ -2,8 +2,11 @@ import RedisStore from "connect-redis"
 import session from "express-session";
 import { createClient } from 'redis';
 
-export const getSession = () => {
-    const redisClient = createClient();
+export const getRedisClient = () => createClient({
+        url: 'redis://localhost:6360'
+    });
+
+export const getSession = (redisClient: any) => {
     redisClient.connect().catch(console.error);
     return session({
         name: "qid",

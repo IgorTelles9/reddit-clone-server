@@ -27,6 +27,7 @@
         "reflect-metadata": "^0.2.2",
         "type-graphql": "^2.0.0-rc.1",
         "typescript": "^5.4.5",
+        "uuid": "^9.0.1",
         "validator": "^13.12.0"
     },
     "devDependencies": {
@@ -34,6 +35,7 @@
         "@types/express-session": "^1.18.0",
         "@types/node": "^20.12.11",
         "@types/nodemailer": "^6.4.15",
+        "@types/uuid": "^9.0.8",
         "class-validator": "^0.14.1",
         "typegraphql-prisma": "^0.27.2"
     }

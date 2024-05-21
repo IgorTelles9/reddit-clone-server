@@ -3,5 +3,6 @@ export type Context = {
     prisma: import("@prisma/client").PrismaClient;
     req: Request
     res: Response;
+    redis: any
 
 }
